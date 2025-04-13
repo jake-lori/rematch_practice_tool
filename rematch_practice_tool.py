@@ -11,7 +11,7 @@ engine = pyttsx3.init()
 directions_pass_easy_relative = ["Front", "Back", "Left", "Right"]
 directions_pass_easy_cardinal = ["North", "South", "East", "West"]
 
-directions_pass_medium_relative = directions_pass_easy_relative + ["Front Left", "Front Right", "Back Left ", "Back Right"]
+directions_pass_medium_relative = directions_pass_easy_relative + ["Front Left", "Front Right", "Back Left", "Back Right"]
 directions_pass_medium_cardinal = directions_pass_easy_cardinal + ["North East", "North West", "South East", "South West"]
 
 # shooting directions init
@@ -41,7 +41,7 @@ def gamemode_start_message(mode):
     speak_blocking("Mode Selected: " + mode)
 
 # setup the passing direction version. cardinal or relative. used for passing and all actions.
-def passing_setup():
+def choose_direction_type():
     statement = ("Should passing direction be cardinal (e.g. north) or relative (e.g. front)? ")
     #speak_blocking(statement)
     while True:
@@ -62,18 +62,18 @@ def passing_setup():
             return(1)
 
 # runs the mode with the initial statement and the directions.
-# if needs_passing_setup is true, it will run the passing setup function to determine which directions to use.
-def run_mode_with_setup(statement, cardinal_directions_path, relative_directions_path, needs_passing_setup, min_time, max_time):
-    if not needs_passing_setup:
+# if needs_direction_setup is true, it will run the passing setup function to determine which directions to use.
+def run_mode_with_setup(statement, cardinal_directions_path, relative_directions_path, needs_direction_setup, min_time, max_time):
+    if not needs_direction_setup:
         # passed with shooting modes.
         directions = relative_directions_path
 
     else:
         # passes with passing and all actions modes.
-        passing_setup_mode = passing_setup()
-        if passing_setup_mode == 0:
+        direction_setup_mode = choose_direction_type()
+        if direction_setup_mode == 0:
             directions =  cardinal_directions_path
-        elif passing_setup_mode == 1:
+        elif direction_setup_mode == 1:
             directions = relative_directions_path
         else:
             speak_blocking("Invalid mode selected.")
@@ -83,12 +83,30 @@ def run_mode_with_setup(statement, cardinal_directions_path, relative_directions
 
     direction_loop(directions, min_time, max_time)
 
+def exit_check():
+    if keyboard.is_pressed('p'):
+        speak_blocking("Returning to main menu")
+        print("Returning to main menu")
+        return True
+    return False
+
+
 # main loop for all the modes. it will randomly select a direction from the list and speak it after a delay.
 def direction_loop(directions, min_time, max_time):
     try:
+        print("Press 'P' at any time to return to the main menu.")
         while True:
+            # exit check
+
+            if exit_check():
+                break
+
             sleep_amount = random.uniform(min_time, max_time)
             time.sleep(sleep_amount)
+
+            # exit check
+            if exit_check():
+                break
 
             direction = random.choice(directions)
             speak_blocking(direction)
@@ -161,6 +179,7 @@ def get_time_range():
 
     except ValueError:
         print("Invalid input. Please enter a number.")
+        return get_time_range()
 
     return minimum_time, maximum_time
 
@@ -216,6 +235,8 @@ def main_menu():
 
             elif user_selected_mode == "custom":
                 get_custom_directions()
+                if not directions_custom:
+                    continue
                 minimum_time, maximum_time = get_time_range()
                 mode_functions[user_selected_mode](minimum_time, maximum_time)
 
