@@ -26,16 +26,19 @@ directions_shooting_hard = directions_shooting_medium + ["Middle Top", "Middle B
 
 directions_all_easy_relative = directions_pass_easy_relative + directions_shooting_easy
 directions_all_easy_cardinal = directions_pass_easy_cardinal + directions_shooting_easy
+directions_all_medium_relative = directions_pass_medium_relative + directions_shooting_medium
+directions_all_medium_cardinal = directions_pass_medium_cardinal + directions_shooting_medium
 
+# called whenever the program needs to speak
 def speak_blocking(text):
     engine.say(text)
     engine.runAndWait()
 
+# called whenever the program starts a new mode
 def gamemode_start_message(mode):
     speak_blocking("Mode Selected: " + mode)
 
-# setup the passing direction version cardinal or relative
-
+# setup the passing direction version. cardinal or relative. used for passing and all actions.
 def passing_setup():
     statement = ("Should passing direction be cardinal (e.g. north) or relative (e.g. front)? ")
     #speak_blocking(statement)
@@ -56,7 +59,8 @@ def passing_setup():
             print("Relative Directions Selected.")
             return(1)
 
-# run_mode_with_setup
+# runs the mode with the initial statement and the directions.
+# if needs_passing_setup is true, it will run the passing setup function to determine which directions to use.
 def run_mode_with_setup(statement, cardinal_directions_path, relative_directions_path, needs_passing_setup):
     if needs_passing_setup:
         passing_setup_mode = passing_setup()
@@ -75,8 +79,7 @@ def run_mode_with_setup(statement, cardinal_directions_path, relative_directions
 
     direction_loop(directions)
 
-# main loop for all the modes
-
+# main loop for all the modes. it will randomly select a direction from the list and speak it after a delay.
 def direction_loop(directions):
     try:
         while True:
@@ -91,6 +94,8 @@ def direction_loop(directions):
         print("Returning to main menu")
         return
 
+
+# functions for each mode. they will call the run_mode_with_setup function with the appropriate parameters.
 def pass_directions_easy():
     run_mode_with_setup("Passing. Easy.", directions_pass_easy_cardinal, directions_pass_easy_relative, True)
 
@@ -106,6 +111,8 @@ def shoot_directions_medium():
 def all_actions_easy():
     run_mode_with_setup("All Actions. Easy.", directions_all_easy_cardinal, directions_all_easy_relative, True)
 
+
+# main function to run the program. it will ask the user for input and run the requested mode.
 def main():
     print("======= REMATCH PRACTICE TOOL =======")
     program_running = True
