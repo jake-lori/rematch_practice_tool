@@ -6,10 +6,23 @@ import time
 engine = pyttsx3.init()
 
 # set properties before adding anything to speak
-directions_easy = ["North", "South", "East", "West"]
-directions_medium = directions_easy + ["North East", "North West", "South East ", "South West"]
-directions_shooting = ["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Middle Left", "Middle Right", "Middle", "Middle Top", "Middle Bottom"]
-directions_all = directions_easy + directions_medium + directions_shooting + ["Flick"]
+
+# passing directions init
+
+directions_pass_easy_relative = ["Front", "Back", "Left", "Right"]
+directions_pass_easy_cardinal = ["North", "South", "East", "West"]
+
+directions_pass_medium_relative = directions_pass_easy_relative + ["Front Left", "Front Right", "Back Left ", "Back Right"]
+directions_pass_medium_cardinal = directions_pass_easy_cardinal + ["North East", "North West", "South East", "South West"]
+
+# shooting directions init
+
+directions_shooting_easy = ["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Middle", "Crossbar"]
+directions_shooting_medium = directions_shooting_easy + ["Middle Left", "Middle Right", "Middle Top", "Middle Bottom", "Volley"]
+
+# all actions init
+
+directions_all_easy = directions_pass_easy_relative + directions_shooting_easy
 
 def speak_blocking(text):
     engine.say(text)
@@ -17,82 +30,147 @@ def speak_blocking(text):
 
 def gamemode_start_message(mode):
     speak_blocking("Mode Selected: " + mode)
-    speak_blocking("Cardinals Directions = Pass Location.")
-    speak_blocking("Relative Directions = Shot Location.")
 
+# setup the passing direction
 
-def pass_directions_easy():
-    gamemode_start_message("Passing. Easy.")
+def passing_setup():
+    statement = ("Should passing direction be cardinal (e.g north) or relative (e.g front)? ")
+    speak_blocking(statement)
+    while True:
+        user_input = input(statement).strip().lower()
+        if user_input in ["cardinal", "relative"]:
+            break
+        else:
+            #speak_blocking("Invalid input. Please enter cardinal or relative.")
+            print("Invalid input. Please enter cardinal or relative.")
+
+    match user_input:
+        case "cardinal":
+            speak_blocking("Cardinal Directions = Pass Location.")
+            print("Cardinal Directions = Pass Location Selected.")
+            return(0)
+        case "relative":
+            speak_blocking("Relative Directions = Pass Location.")
+            print("Relative Directions = Pass Location Selected.")
+            return(1)
+
+def passing_loop(directions):
     try:
         while True:
-            sleep_amount = random.uniform(0.4, 1.0)
+            sleep_amount = random.uniform(0.5, 1.0)
             time.sleep(sleep_amount)
 
-            direction = random.choice(directions_easy)
+            direction = random.choice(directions)
             speak_blocking(direction)
+
     except KeyboardInterrupt:
         speak_blocking("Exiting easy mode")
         return
 
-def pass_directions_medium():
-    gamemode_start_message("Passing. Medium.")
-    try:
-        while True:
-            sleep_amount = random.uniform(0.3, 0.6)
-            time.sleep(sleep_amount)
+def pass_directions_easy():
+    statement = ("Passing. Easy.")
+    gamemode_start_message(statement)
+    print(statement)
+    passing_setup_mode = passing_setup()
 
-            direction = random.choice(directions_medium)
-            speak_blocking(direction)
-    except KeyboardInterrupt:
-        speak_blocking("Exiting medium mode")
+    if passing_setup_mode == 0:
+        directions = directions_pass_easy_cardinal
+    elif passing_setup_mode == 1:
+        directions = directions_pass_easy_relative
+    else:
+        speak_blocking("Invalid mode selected.")
         return
 
-def shooting():
-    gamemode_start_message("Shooting. Medium.")
+    passing_loop(directions)
+
+def pass_directions_medium():
+    statement = ("Passing. Medium.")
+    gamemode_start_message(statement)
+    print(statement)
+    passing_setup_mode = passing_setup()
+
+    if passing_setup_mode == 0:
+        directions = directions_pass_medium_cardinal
+    elif passing_setup_mode == 1:
+        directions = directions_pass_medium_relative
+    else:
+        speak_blocking("Invalid mode selected.")
+        return
+
+    passing_loop(directions)
+
+def shoot_direction_easy():
+    statement = ("Shooting. Easy.")
+    gamemode_start_message(statement)
+    print(statement)
     try:
         while True:
-            sleep_amount = random.uniform(0.6, 0.8)
+            sleep_amount = random.uniform(1, 1.6)
             time.sleep(sleep_amount)
 
-            direction = random.choice(directions_shooting)
+            direction = random.choice(directions_shooting_easy)
             speak_blocking(direction)
     except KeyboardInterrupt:
         speak_blocking("Exiting shooting mode")
         return
 
-def all_actions():
-    gamemode_start_message("All Actions.")
+
+def shoot_direction_medium():
+    statement = ("Shooting. Medium.")
+    gamemode_start_message(statement)
+    print(statement)
     try:
         while True:
-            sleep_amount = random.uniform(0.5, 0.7)
+            sleep_amount = random.uniform(0.8, 1.3)
             time.sleep(sleep_amount)
 
-            direction = random.choice(directions_all)
+            direction = random.choice(directions_shooting_medium)
+            speak_blocking(direction)
+    except KeyboardInterrupt:
+        speak_blocking("Exiting shooting mode")
+        return
+
+def all_actions_easy():
+    statement = ("All Actions. Easy.")
+    gamemode_start_message(statement)
+    print(statement)
+
+    try:
+        while True:
+            sleep_amount = random.uniform(0.7, 1.2)
+            time.sleep(sleep_amount)
+
+            direction = random.choice(directions_all_easy)
             speak_blocking(direction)
     except KeyboardInterrupt:
         speak_blocking("Exiting shooting mode")
         return
 
 def main():
-    statement = ("Type 'easy', 'medium', 'shoot' or 'all' to choose a mode: ")
-    speak_blocking(statement)
+    statement = ("Type 'pass easy', 'pass medium', 'shoot easy', 'shoot medium' or 'all easy' to choose a mode: ")
+    #speak_blocking(statement)
 
     while True:
         user_mode = input(statement).strip().lower()
         match user_mode:
-            case "easy":
+            case "pass easy":
                 pass_directions_easy()
                 break
-            case "medium":
+            case "pass medium":
                 pass_directions_medium()
                 break
-            case "shoot":
-                shooting()
+            case "shoot easy":
+                shoot_direction_easy()
                 break
-            case "all":
-                all_actions()
+            case "shoot medium":
+                shoot_direction_medium()
+                break
+            case "all easy":
+                all_actions_easy()
                 break
             case _:
-                speak_blocking("Invalid input. Please enter easy, medium, shoot, or all.")
+                statement = ("Invalid input. Please enter easy, medium, shoot, or all.")
+                #speak_blocking(statement)
+                print(statement)
 
 main()
