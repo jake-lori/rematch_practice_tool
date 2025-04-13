@@ -14,11 +14,14 @@ directions_pass_easy_cardinal = ["North", "South", "East", "West"]
 directions_pass_medium_relative = directions_pass_easy_relative + ["Front Left", "Front Right", "Back Left", "Back Right"]
 directions_pass_medium_cardinal = directions_pass_easy_cardinal + ["North East", "North West", "South East", "South West"]
 
+directions_pass_hard_relative = directions_pass_medium_relative + ["Long Front Left", "Long Front Right", "Long Back Left", "Long Back Right"]
+directions_pass_hard_cardinal = directions_pass_medium_cardinal + ["Long North East", "Long North West", "Long South East", "Long South West"]
+
 # shooting directions init
 
 directions_shooting_easy = ["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Middle"]
-directions_shooting_medium = directions_shooting_easy + ["Volley", "Crossbar"]
-directions_shooting_hard = directions_shooting_medium + ["Middle Top", "Middle Bottom", "Middle Left", "Middle Right"]
+directions_shooting_medium = directions_shooting_easy + ["Crossbar"]
+directions_shooting_hard = directions_shooting_medium + ["Middle Top", "Middle Bottom", "Volley"]
 
 # all actions init
 
@@ -26,6 +29,8 @@ directions_all_easy_relative = directions_pass_easy_relative + directions_shooti
 directions_all_easy_cardinal = directions_pass_easy_cardinal + directions_shooting_easy
 directions_all_medium_relative = directions_pass_medium_relative + directions_shooting_medium
 directions_all_medium_cardinal = directions_pass_medium_cardinal + directions_shooting_medium
+directions_all_hard_relative = directions_pass_hard_relative + directions_shooting_hard
+directions_all_hard_cardinal = directions_pass_hard_cardinal + directions_shooting_hard
 
 # custom mode init
 
@@ -85,8 +90,8 @@ def run_mode_with_setup(statement, cardinal_directions_path, relative_directions
 
 def exit_check():
     if keyboard.is_pressed('p'):
-        speak_blocking("Returning to main menu")
-        print("Returning to main menu")
+        speak_blocking("Returning to main menu.")
+        print("Returning to main menu.")
         return True
     return False
 
@@ -94,7 +99,7 @@ def exit_check():
 # main loop for all the modes. it will randomly select a direction from the list and speak it after a delay.
 def direction_loop(directions, min_time, max_time):
     try:
-        print("Press 'P' at any time to return to the main menu.")
+        print("Hold 'P' at any time to return to the main menu.")
         while True:
             # exit check
 
@@ -135,14 +140,26 @@ def pass_directions_easy():
 def pass_directions_medium():
     run_mode_with_setup("Passing. Medium.", directions_pass_medium_cardinal, directions_pass_medium_relative, True, 0.3, 0.6)
 
+def pass_directions_hard():
+    run_mode_with_setup("Passing. Hard.", directions_pass_hard_cardinal, directions_pass_hard_relative, True, 0.1, 0.3)
+
 def shoot_directions_easy():
     run_mode_with_setup("Shooting. Easy.", None, directions_shooting_easy, False, 0.9, 1.2)
 
 def shoot_directions_medium():
-    run_mode_with_setup("Shooting. Medium.", None, directions_shooting_medium, False, 0.5, 0.5)
+    run_mode_with_setup("Shooting. Medium.", None, directions_shooting_medium, False, 0.5, 0.8)
+
+def shoot_directions_hard():
+    run_mode_with_setup("Shooting. Hard.", None, directions_shooting_hard, False, 0.3, 0.5)
 
 def all_actions_easy():
     run_mode_with_setup("All Actions. Easy.", directions_all_easy_cardinal, directions_all_easy_relative, True, 1, 1.5)
+
+def all_actions_medium():
+    run_mode_with_setup("All Actions. Medium.", directions_all_medium_cardinal, directions_all_medium_relative, True, 0.5, 1)
+
+def all_actions_hard():
+    run_mode_with_setup("All Actions. Hard.", directions_all_hard_cardinal, directions_all_hard_relative, True, 0.3, 0.5)
 
 def custom_mode(min_time, max_time):
     run_mode_with_setup("Custom Mode.", None, directions_custom, False, min_time, max_time)
@@ -212,9 +229,13 @@ def main_menu():
     mode_functions = {
         "pass easy": pass_directions_easy,
         "pass medium": pass_directions_medium,
+        "pass hard": pass_directions_hard,
         "shoot easy": shoot_directions_easy,
         "shoot medium": shoot_directions_medium,
+        "shoot hard": shoot_directions_hard,
         "all easy": all_actions_easy,
+        "all medium": all_actions_medium,
+        "all hard": all_actions_hard,
         "custom": custom_mode
     }
 
@@ -226,7 +247,7 @@ def main_menu():
     while program_running:
         try:
             user_selected_mode = input(
-                "Type 'pass easy', 'pass medium', 'shoot easy', 'shoot medium', 'all easy', 'custom', or 'exit' to choose a mode: "
+                "Type \"mode difficulty\" to select a mode (e.g. \"pass easy\", \"shoot medium\", \"all hard\") or 'exit' to quit: "
             ).strip().lower()
 
             if user_selected_mode == "exit":
