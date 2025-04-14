@@ -14,14 +14,14 @@ directions_pass_easy_cardinal = ["North", "South", "East", "West"]
 directions_pass_medium_relative = directions_pass_easy_relative + ["Front Left", "Front Right", "Back Left", "Back Right"]
 directions_pass_medium_cardinal = directions_pass_easy_cardinal + ["North East", "North West", "South East", "South West"]
 
-directions_pass_hard_relative = directions_pass_medium_relative + ["Long Front Left", "Long Front Right", "Long Back Left", "Long Back Right"]
-directions_pass_hard_cardinal = directions_pass_medium_cardinal + ["Long North East", "Long North West", "Long South East", "Long South West"]
+directions_pass_hard_relative = directions_pass_medium_relative + ["Long Front Left", "Long Front Right", "Long Back Left", "Long Back Right", "Box It", "Left Wing", "Right Wing"]
+directions_pass_hard_cardinal = directions_pass_medium_cardinal + ["Long North East", "Long North West", "Long South East", "Long South West", "Box It", "Left Wing", "Right Wing"]
 
 # shooting directions init
 
 directions_shooting_easy = ["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Middle"]
-directions_shooting_medium = directions_shooting_easy + ["Crossbar"]
-directions_shooting_hard = directions_shooting_medium + ["Middle Top", "Middle Bottom", "Volley"]
+directions_shooting_medium = directions_shooting_easy + ["Crossbar", "Middle Top", "Middle Bottom"]
+directions_shooting_hard = directions_shooting_medium + ["Volley", "Left Post", "Right Post"]
 
 # all actions init
 
@@ -37,13 +37,13 @@ directions_all_hard_cardinal = directions_pass_hard_cardinal + directions_shooti
 directions_custom = []
 
 # called whenever the program needs to speak
-def speak_blocking(text):
+def tts_speak(text):
     engine.say(text)
     engine.runAndWait()
 
 # called whenever the program starts a new mode
 def gamemode_start_message(mode):
-    speak_blocking("Mode Selected: " + mode)
+    tts_speak("Mode Selected: " + mode)
 
 # setup the passing direction version. cardinal or relative. used for passing and all actions.
 def choose_direction_type():
@@ -58,11 +58,11 @@ def choose_direction_type():
 
     match user_input:
         case "cardinal":
-            speak_blocking("Cardinal Directions Selected.")
+            tts_speak("Cardinal Directions Selected.")
             print("Cardinal Directions Selected.")
             return(0)
         case "relative":
-            speak_blocking("Relative Directions Selected.")
+            tts_speak("Relative Directions Selected.")
             print("Relative Directions Selected.")
             return(1)
 
@@ -81,7 +81,7 @@ def run_mode_with_setup(statement, cardinal_directions_path, relative_directions
         elif direction_setup_mode == 1:
             directions = relative_directions_path
         else:
-            speak_blocking("Invalid mode selected.")
+            tts_speak("Invalid mode selected.")
             return
     gamemode_start_message(statement)
     print(statement)
@@ -90,7 +90,7 @@ def run_mode_with_setup(statement, cardinal_directions_path, relative_directions
 
 def exit_check():
     if keyboard.is_pressed('p'):
-        speak_blocking("Returning to main menu.")
+        tts_speak("Returning to main menu.")
         print("Returning to main menu.")
         return True
     return False
@@ -114,10 +114,10 @@ def direction_loop(directions, min_time, max_time):
                 break
 
             direction = random.choice(directions)
-            speak_blocking(direction)
+            tts_speak(direction)
 
     except KeyboardInterrupt:
-        speak_blocking("Returning to main menu")
+        tts_speak("Returning to main menu")
         print("Returning to main menu")
         return
 
@@ -144,22 +144,22 @@ def pass_directions_hard():
     run_mode_with_setup("Passing. Hard.", directions_pass_hard_cardinal, directions_pass_hard_relative, True, 0.1, 0.3)
 
 def shoot_directions_easy():
-    run_mode_with_setup("Shooting. Easy.", None, directions_shooting_easy, False, 0.9, 1.2)
+    run_mode_with_setup("Shooting. Easy.", None, directions_shooting_easy, False, 1, 1.5)
 
 def shoot_directions_medium():
-    run_mode_with_setup("Shooting. Medium.", None, directions_shooting_medium, False, 0.5, 0.8)
+    run_mode_with_setup("Shooting. Medium.", None, directions_shooting_medium, False, 0.8, 1.2)
 
 def shoot_directions_hard():
-    run_mode_with_setup("Shooting. Hard.", None, directions_shooting_hard, False, 0.3, 0.5)
+    run_mode_with_setup("Shooting. Hard.", None, directions_shooting_hard, False, 0.5, 0.8)
 
 def all_actions_easy():
-    run_mode_with_setup("All Actions. Easy.", directions_all_easy_cardinal, directions_all_easy_relative, True, 1, 1.5)
+    run_mode_with_setup("All Actions. Easy.", directions_all_easy_cardinal, directions_all_easy_relative, True, 1.2, 1.7)
 
 def all_actions_medium():
-    run_mode_with_setup("All Actions. Medium.", directions_all_medium_cardinal, directions_all_medium_relative, True, 0.5, 1)
+    run_mode_with_setup("All Actions. Medium.", directions_all_medium_cardinal, directions_all_medium_relative, True, 0.8, 1.2)
 
 def all_actions_hard():
-    run_mode_with_setup("All Actions. Hard.", directions_all_hard_cardinal, directions_all_hard_relative, True, 0.3, 0.5)
+    run_mode_with_setup("All Actions. Hard.", directions_all_hard_cardinal, directions_all_hard_relative, True, 0.5, 0.5)
 
 def custom_mode(min_time, max_time):
     run_mode_with_setup("Custom Mode.", None, directions_custom, False, min_time, max_time)
@@ -246,8 +246,11 @@ def main_menu():
 
     while program_running:
         try:
+            print ("Available modes:")
+            for i in mode_functions.keys():
+                print(i)
             user_selected_mode = input(
-                "Type \"mode difficulty\" to select a mode (e.g. \"pass easy\", \"shoot medium\", \"all hard\") or 'exit' to quit: "
+                "Type [mode] [difficulty] to select a mode (e.g. 'pass easy', 'all hard') or 'exit' to quit: "
             ).strip().lower()
 
             if user_selected_mode == "exit":
@@ -274,7 +277,7 @@ def main_menu():
 
 
         except KeyboardInterrupt:
-            speak_blocking("Exiting program")
+            tts_speak("Exiting program")
             break
 
 def main():
